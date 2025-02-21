@@ -223,3 +223,210 @@ HBEGroupBox:AddLabel('Hitbox Color'):AddColorPicker('HitboxColorPicker', {
     end
 })
 
+
+
+
+
+
+
+
+
+local settings = {
+    BoxESP = {
+        Enabled = false,
+        Color = Color3.fromRGB(255, 255, 255),
+        Thickness = 2,
+    },
+    NameESP = {
+        Enabled = false,
+        Color = Color3.fromRGB(255, 255, 255),
+        Size = 15,
+    },
+}
+
+local players = game:GetService("Players")
+local runService = game:GetService("RunService")
+local camera = game.Workspace.CurrentCamera
+local localPlayer = players.LocalPlayer
+local espObjects = {} -- Store ESP objects per player
+
+-- Function to create Drawing objects
+local function createDrawing(type, properties)
+    local obj = Drawing.new(type)
+    for prop, value in pairs(properties) do
+        obj[prop] = value
+    end
+    return obj
+end
+
+local function createESPForPlayer(player)
+    local espData = {
+        Box = {
+            Top = createDrawing("Line", {Thickness = settings.BoxESP.Thickness, Color = settings.BoxESP.Color}),
+            Bottom = createDrawing("Line", {Thickness = settings.BoxESP.Thickness, Color = settings.BoxESP.Color}),
+            Left = createDrawing("Line", {Thickness = settings.BoxESP.Thickness, Color = settings.BoxESP.Color}),
+            Right = createDrawing("Line", {Thickness = settings.BoxESP.Thickness, Color = settings.BoxESP.Color}),
+        },
+        Name = createDrawing("Text", {
+            Size = settings.NameESP.Size,
+            Color = settings.NameESP.Color,
+            Center = true,
+        }),
+    }
+    espObjects[player] = espData
+end
+
+local function cleanupESPForPlayer(player)
+    if espObjects[player] then
+        for _, obj in pairs(espObjects[player].Box) do
+            obj:Remove()
+        end
+        if espObjects[player].Name then
+            espObjects[player].Name:Remove()
+        end
+        espObjects[player] = nil
+    end
+end
+
+local function updateESP()
+    for player, data in pairs(espObjects) do
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = player.Character.HumanoidRootPart
+            local screenPos, onScreen = camera:WorldToViewportPoint(hrp.Position)
+
+            if onScreen then
+                -- Update Box ESP
+                if settings.BoxESP.Enabled then
+                    local size = Vector3.new(2, 3, 0)
+                    local topLeft = camera:WorldToViewportPoint((hrp.CFrame * CFrame.new(size.X, size.Y, 0)).Position)
+                    local topRight = camera:WorldToViewportPoint((hrp.CFrame * CFrame.new(-size.X, size.Y, 0)).Position)
+                    local bottomLeft = camera:WorldToViewportPoint((hrp.CFrame * CFrame.new(size.X, -size.Y, 0)).Position)
+                    local bottomRight = camera:WorldToViewportPoint((hrp.CFrame * CFrame.new(-size.X, -size.Y, 0)).Position)
+
+                    local box = data.Box
+                    box.Top.From = Vector2.new(topLeft.X, topLeft.Y)
+                    box.Top.To = Vector2.new(topRight.X, topRight.Y)
+                    box.Bottom.From = Vector2.new(bottomLeft.X, bottomLeft.Y)
+                    box.Bottom.To = Vector2.new(bottomRight.X, bottomRight.Y)
+                    box.Left.From = Vector2.new(topLeft.X, topLeft.Y)
+                    box.Left.To = Vector2.new(bottomLeft.X, bottomLeft.Y)
+                    box.Right.From = Vector2.new(topRight.X, topRight.Y)
+                    box.Right.To = Vector2.new(bottomRight.X, bottomRight.Y)
+
+                    for _, line in pairs(box) do
+                        line.Color = settings.BoxESP.Color
+                        line.Thickness = settings.BoxESP.Thickness
+                        line.Visible = true
+                    end
+                else
+                    for _, line in pairs(data.Box) do
+                        line.Visible = false
+                    end
+                end
+
+                -- Update Name ESP
+                if settings.NameESP.Enabled then
+                    local nameTag = data.Name
+                    nameTag.Text = player.Name
+                    nameTag.Position = Vector2.new(screenPos.X, screenPos.Y - 30)
+                    nameTag.Size = settings.NameESP.Size
+                    nameTag.Color = settings.NameESP.Color
+                    nameTag.Visible = true
+                else
+                    data.Name.Visible = false
+                end
+            else
+                -- Hide ESP if off-screen
+                for _, line in pairs(data.Box) do
+                    line.Visible = false
+                end
+                data.Name.Visible = false
+            end
+        else
+            cleanupESPForPlayer(player)
+        end
+    end
+end
+
+-- Setup ESP for Players
+local function setupESPForPlayer(player)
+    if player ~= localPlayer then
+        cleanupESPForPlayer(player)
+        createESPForPlayer(player)
+        player.CharacterAdded:Connect(function()
+            wait(0.1)
+            cleanupESPForPlayer(player)
+            createESPForPlayer(player)
+        end)
+    end
+end
+
+local function setupESP()
+    for _, player in ipairs(players:GetPlayers()) do
+        setupESPForPlayer(player)
+    end
+
+    players.PlayerAdded:Connect(setupESPForPlayer)
+    players.PlayerRemoving:Connect(cleanupESPForPlayer)
+
+    runService.RenderStepped:Connect(updateESP)
+end
+
+-- GUI Integration with LeftGroupBox
+ESPGroupBox:AddToggle('BoxESP_Toggle', {
+    Text = 'Box ESP',
+    Default = false,
+    Tooltip = 'Enables or disables Box ESP',
+    Callback = function(Value)
+        settings.BoxESP.Enabled = Value
+    end
+})
+
+ESPGroupBox:AddLabel('Box ESP Color'):AddColorPicker('BoxESP_ColorPicker', {
+    Default = settings.BoxESP.Color,
+    Title = 'Select Box ESP Color',
+    Callback = function(Value)
+        settings.BoxESP.Color = Value
+    end
+})
+
+ESPGroupBox:AddSlider('BoxESP_Thickness', {
+    Text = 'Box Thickness',
+    Default = settings.BoxESP.Thickness,
+    Min = 1,
+    Max = 5,
+    Rounding = 1,
+    Callback = function(Value)
+        settings.BoxESP.Thickness = Value
+    end
+})
+
+ESPGroupBox:AddToggle('NameESP_Toggle', {
+    Text = 'Name ESP',
+    Default = false,
+    Tooltip = 'Enables or disables Name ESP',
+    Callback = function(Value)
+        settings.NameESP.Enabled = Value
+    end
+})
+
+ESPGroupBox:AddLabel('Name ESP Color'):AddColorPicker('NameESP_ColorPicker', {
+    Default = settings.NameESP.Color,
+    Title = 'Select Name ESP Color',
+    Callback = function(Value)
+        settings.NameESP.Color = Value
+    end
+})
+ESPGroupBox:AddSlider('NameESP_Size', {
+    Text = 'Name ESP Size',
+    Default = settings.NameESP.Size,
+    Min = 10,
+    Max = 30,
+    Rounding = 1,
+    Callback = function(Value)
+        settings.NameESP.Size = Value
+    end
+})
+
+-- Start the ESP system
+setupESP()

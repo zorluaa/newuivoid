@@ -30,19 +30,19 @@ local Main = {
 -- tabs
 local Aiming = {
     -- Creates a new tab titled Main
-    Extra = Window:AddTab('Aiming'),
+    HBE = Window:AddTab('Aiming'),
 }
 
 local ESP = {
     -- Creates a new tab titled Main
-    Extra = Window:AddTab('ESP'),
+    ESP = Window:AddTab('ESP'),
 }
 
 
 -- Create group boxes for each tab separately
 local AutoGroupBox = Main.Main:AddLeftGroupbox('Auto')
-local HBEGroupBox = Aiming.Extra:AddLeftGroupbox('HBE')
-local ESPGroupBox = ESP.Extra:AddLeftGroupbox('ESP')
+local HBEGroupBox = Aiming.HBE:AddLeftGroupbox('HBE')
+local ESPGroupBox = ESP.ESP:AddLeftGroupbox('ESP')
 
 
 

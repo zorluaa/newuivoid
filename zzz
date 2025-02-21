@@ -33,6 +33,12 @@ local Aiming = {
     HBE = Window:AddTab('Aiming'),
 }
 
+local Misc = {
+    -- Creates a new tab titled Main
+    Misc = Window:AddTab('Misc'),
+}
+
+
 local ESP = {
     -- Creates a new tab titled Main
     ESP = Window:AddTab('ESP'),
@@ -42,6 +48,7 @@ local ESP = {
 -- Create group boxes for each tab separately
 local AutoGroupBox = Main.Main:AddLeftGroupbox('Auto')
 local HBEGroupBox = Aiming.HBE:AddLeftGroupbox('HBE')
+local MiscGroupBox = Misc.Misc:AddLeftGroupbox('Misc')
 local ESPGroupBox = ESP.ESP:AddLeftGroupbox('ESP')
 
 
@@ -222,12 +229,229 @@ HBEGroupBox:AddLabel('Hitbox Color'):AddColorPicker('HitboxColorPicker', {
         end
     end
 })
+-- Misc
+
+-- MISC FEATURES --
+
+
+-- Toggle: Infinite Jump
+local InfiniteJumpEnabled = false
+MiscGroupBox:AddToggle('InfiniteJumpToggle', {
+    Text = 'Infinite Jump',
+    Default = false,
+    Tooltip = 'Allows you to jump infinitely',
+    Callback = function(Value)
+        InfiniteJumpEnabled = Value
+        print('[cb] Infinite Jump:', Value)
+
+        if InfiniteJumpEnabled then
+            game:GetService("UserInputService").JumpRequest:Connect(function()
+                if InfiniteJumpEnabled and game.Players.LocalPlayer.Character then
+                    local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then
+                        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                    end
+                end
+            end)
+        end
+    end
+})
+
+-- Toggle: NoClip
+local NoClipEnabled = false
+MiscGroupBox:AddToggle('NoClipToggle', {
+    Text = 'NoClip',
+    Default = false,
+    Tooltip = 'Walk through walls',
+    Callback = function(Value)
+        NoClipEnabled = Value
+        print('[cb] NoClip:', Value)
+
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+
+        game:GetService("RunService").Stepped:Connect(function()
+            if NoClipEnabled and character then
+                for _, part in pairs(character:GetDescendants()) do
+                    if part:IsA("BasePart") and part.CanCollide then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
+    end
+})
+
+-- Toggle: Fly
+local FlyEnabled = false
+local FlySpeed = 50
+local BodyVelocity
+
+local function EnableFly()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local rootPart = character:WaitForChild("HumanoidRootPart")
+
+    BodyVelocity = Instance.new("BodyVelocity")
+    BodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
+    BodyVelocity.Velocity = Vector3.zero
+    BodyVelocity.Parent = rootPart
+
+    local userInput = game:GetService("UserInputService")
+
+    local function updateVelocity()
+        local direction = Vector3.zero
+        if userInput:IsKeyDown(Enum.KeyCode.W) then direction = direction + Vector3.new(0, 0, -1) end
+        if userInput:IsKeyDown(Enum.KeyCode.S) then direction = direction + Vector3.new(0, 0, 1) end
+        if userInput:IsKeyDown(Enum.KeyCode.A) then direction = direction + Vector3.new(-1, 0, 0) end
+        if userInput:IsKeyDown(Enum.KeyCode.D) then direction = direction + Vector3.new(1, 0, 0) end
+        if userInput:IsKeyDown(Enum.KeyCode.Space) then direction = direction + Vector3.new(0, 1, 0) end
+        if userInput:IsKeyDown(Enum.KeyCode.LeftControl) then direction = direction + Vector3.new(0, -1, 0) end
+
+        if direction.Magnitude > 0 then
+            BodyVelocity.Velocity = direction.Unit * FlySpeed
+        else
+            BodyVelocity.Velocity = Vector3.zero
+        end
+    end
+
+    local connection
+    connection = game:GetService("RunService").RenderStepped:Connect(function()
+        if FlyEnabled then
+            updateVelocity()
+        else
+            BodyVelocity:Destroy()
+            connection:Disconnect()
+        end
+    end)
+end
+
+MiscGroupBox:AddToggle('FlyToggle', {
+    Text = 'Fly',
+    Default = false,
+    Tooltip = 'Enables flight mode',
+    Callback = function(Value)
+        FlyEnabled = Value
+        print('[cb] Fly Enabled:', Value)
+
+        if FlyEnabled then
+            EnableFly()
+        elseif BodyVelocity then
+            BodyVelocity:Destroy()
+        end
+    end
+})
+
+-- Slider: Fly Speed
+MiscGroupBox:AddSlider('FlySpeedSlider', {
+    Text = 'Fly Speed',
+    Default = 50,
+    Min = 10,
+    Max = 200,
+    Rounding = 1,
+    Callback = function(Value)
+        FlySpeed = Value
+        print('[cb] Fly Speed set to:', Value)
+    end
+})
+
+-- Slider: Jump Power
+MiscGroupBox:AddSlider('JumpPowerSlider', {
+    Text = 'Jump Power',
+    Default = 50,
+    Min = 16,
+    Max = 399,
+    Rounding = 1,
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+            player.Character:FindFirstChildOfClass("Humanoid").JumpPower = Value
+            print('[cb] Jump Power set to:', Value)
+        end
+    end
+})
+
+-- Slider: Walk Speed
+MiscGroupBox:AddSlider('WalkSpeedSlider', {
+    Text = 'Walk Speed',
+    Default = 16,
+    Min = 16,
+    Max = 399,
+    Rounding = 1,
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+            player.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = Value
+            print('[cb] Walk Speed set to:', Value)
+        end
+    end
+})
+
+-- Toggle: Float
+local FloatEnabled = false
+local FloatHeight = 0
+local BodyPosition
+local FloatConnection
+
+local function EnableFloat()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local rootPart = character:WaitForChild("HumanoidRootPart")
+
+    FloatHeight = rootPart.Position.Y
+
+    BodyPosition = Instance.new("BodyPosition")
+    BodyPosition.MaxForce = Vector3.new(0, 100000, 0)
+    BodyPosition.P = 10000
+    BodyPosition.D = 100
+    BodyPosition.Position = rootPart.Position + Vector3.new(0, 0, 0)
+    BodyPosition.Parent = rootPart
+
+    FloatConnection = game:GetService("RunService").RenderStepped:Connect(function()
+        if FloatEnabled then
+            BodyPosition.Position = Vector3.new(rootPart.Position.X, FloatHeight, rootPart.Position.Z)
+        else
+            if FloatConnection then FloatConnection:Disconnect() end
+            if BodyPosition then BodyPosition:Destroy() end
+        end
+    end)
+end
+
+MiscGroupBox:AddToggle('FloatToggle', {
+    Text = 'Float',
+    Default = false,
+    Tooltip = 'Float in the air',
+    Callback = function(Value)
+        FloatEnabled = Value
+        print('[cb] Float Enabled:', Value)
+
+        if FloatEnabled then
+            EnableFloat()
+        else
+            if FloatConnection then FloatConnection:Disconnect() end
+            if BodyPosition then BodyPosition:Destroy() end
+        end
+    end
+})
+
+-- Slider: Float Height
+MiscGroupBox:AddSlider('FloatHeightSlider', {
+    Text = 'Float Height',
+    Default = 0,
+    Min = 0,
+    Max = 100,
+    Rounding = 1,
+    Callback = function(Value)
+        FloatHeight = Value
+        print('[cb] Float Height Updated:', Value)
+    end
+})
 
 
 
 
 
-
+-- Esp
 
 
 

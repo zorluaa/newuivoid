@@ -11,7 +11,7 @@ local Window = Library:CreateWindow({
     -- Position and Size are also valid options here
     -- but you do not need to define them unless you are changing them :)
 
-    Title = 'Void.lua - Universal',
+    Title = 'Void.lua - Mvsd',
     Center = true,
     AutoShow = true,
     TabPadding = 8,
@@ -22,8 +22,90 @@ local Window = Library:CreateWindow({
 
 
 -- tabs
-local Tabs = {
-    -- Creates a new tab titled Main
+local Main = {
     Main = Window:AddTab('Main'),
-    ['UI Settings'] = Window:AddTab('UI Settings'),
 }
+
+
+-- tabs
+local Aiming = {
+    -- Creates a new tab titled Main
+    Extra = Window:AddTab('Aiming'),
+}
+
+local ESP = {
+    -- Creates a new tab titled Main
+    Extra = Window:AddTab('ESP'),
+}
+
+
+-- Create group boxes for each tab separately
+local AutoGroupBox = Main.Main:AddLeftGroupbox('Auto')
+local HBEGroupBox = Aiming.Extra:AddLeftGroupbox('HBE')
+local ESPGroupBox = ESP.Extra:AddLeftGroupbox('ESP')
+
+
+
+-- e
+
+
+local killAllEnabled = false
+
+-- Function to handle enabling the kill functionality
+function EnableKillAll()
+    while killAllEnabled do
+        local success, err = pcall(function()
+            local Backpack = game:GetService("Players").LocalPlayer.Backpack:GetChildren()
+            local gun = nil
+
+            -- Equip Gun If Not Equipped
+            for i, v in pairs(Backpack) do
+                if v:FindFirstChildWhichIsA("Sound") then
+                    gun = v
+                    gun.Parent = game:GetService("Players").LocalPlayer.Character
+                end
+            end
+
+            -- Loop through all players in the workspace
+            for i, v in pairs(workspace:GetChildren()) do
+                if v:IsA("Model") and game.Players:FindFirstChild(v.Name) and v.Name ~= game.Players.LocalPlayer.Name and not v:FindFirstChild("Highlight") then
+                    -- Define arguments for the shooting action
+                    local args = {
+                        [1] = Vector3.new(-265.2897033691406, 62.42794036865334, 162.05580139160156),  -- Target position (adjust if needed)
+                        [2] = Vector3.new(-219.57574462890625, 54.045166015625, 319.8157653808594), -- Another target position
+                        [3] = v.LeftLowerArm.Part,  -- Target part of the model (change this to whatever part you need)
+                        [4] = Vector3.new(-234.1997833251953, 58.66779708862305, 272.2261657714844)  -- Another position (adjust if needed)
+                    }
+
+                    -- Fire the remote to trigger the shooting action
+                    game:GetService("ReplicatedStorage").Remotes.Shoot:FireServer(unpack(args))
+                end
+            end
+        end)
+
+        if not success then
+            warn("Error in EnableKillAll: " .. tostring(err))
+        end
+
+        -- Avoid overloading the game loop
+        task.wait(0.1) -- Adjust delay as needed for performance
+    end
+end
+
+-- Create the toggle inside LeftGroupBox
+AutoGroupBox:AddToggle('KillAllToggle', {
+    Text = 'Kill All',
+    Default = false, -- Default state
+    Tooltip = 'Automatically attacks all players in the game',
+
+    Callback = function(Value)
+        killAllEnabled = Value
+        print("Kill All Enabled:", Value)
+
+        if Value then
+            task.spawn(EnableKillAll) -- Run in a separate thread
+        else
+            killAllEnabled = false -- Ensure loop stops
+        end
+    end
+})

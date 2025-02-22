@@ -576,6 +576,51 @@ RMiscGroupBox:AddToggle('AntiAFK', {
     end
 })
 
+
+
+local spinbotEnabled = false   -- Flag to control if spinbot is on or off
+local spinSpeed = 1            -- Default spin speed (1-100)
+
+-- Spinbot function to make the player spin
+local function Spinbot()
+    while spinbotEnabled do
+        lp.Character.HumanoidRootPart.CFrame = lp.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0)
+        wait(0.01)  -- Adjust the wait time to control spin speed precision
+    end
+end
+
+-- Toggle for enabling/disabling the spinbot
+RMiscGroupBox:AddToggle('SpinbotToggle', {
+    Text = 'Spinbot',
+    Default = false,  -- Initially off
+    Tooltip = 'Toggle spinbot on/off',
+
+    Callback = function(Value)
+        spinbotEnabled = Value
+        if spinbotEnabled then
+            -- Start the spinbot when it's toggled on
+            Spinbot()
+        end
+        print('[cb] Spinbot changed to:', Value)
+    end
+})
+
+-- Slider for controlling spin speed (1-100)
+RMiscGroupBox:AddSlider('SpinSpeedSlider', {
+    Text = 'Spin Speed (1 - 100)',
+    Default = 1,  -- Default spin speed
+    Min = 1,
+    Max = 100,
+    Rounding = 1,
+    Compact = false,
+
+    Callback = function(Value)
+        spinSpeed = Value
+        print('[cb] Spin speed changed to:', Value)
+    end
+})
+
+
 -- Advertise Toggle
 -- Advertise Toggle
 
@@ -896,7 +941,6 @@ end)
 
 -- Set the initial color for the picker
 Options.ColorPicker:SetValueRGB(Color3.fromRGB(175, 25, 255))
-
 
 
 

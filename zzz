@@ -49,6 +49,7 @@ local ESP = {
 local AutoGroupBox = Main.Main:AddLeftGroupbox('Auto')
 local HBEGroupBox = Aiming.HBE:AddLeftGroupbox('HBE')
 local MiscGroupBox = Misc.Misc:AddLeftGroupbox('Misc')
+local RMiscGroupbox = Misc.Main:AddRightGroupbox('Misc #2');
 local ESPGroupBox = ESP.ESP:AddLeftGroupbox('ESP')
 
 
@@ -149,7 +150,7 @@ end
 AutoGroupBox:AddToggle('Toggle_Pad1', {
     Text = 'Teleport to Pad1',
     Default = false,
-    Tooltip = 'Toggle to teleport to Pad1',
+    Tooltip = 'Teleport 1v1 Pad',
     Callback = function(Value)
         Toggles["Pad1"] = Value
         if Value then
@@ -161,7 +162,7 @@ AutoGroupBox:AddToggle('Toggle_Pad1', {
 AutoGroupBox:AddToggle('Toggle_Pad2', {
     Text = 'Teleport to Pad2',
     Default = false,
-    Tooltip = 'Toggle to teleport to Pad2',
+    Tooltip = 'Teleport 2v2 Pad',
     Callback = function(Value)
         Toggles["Pad2"] = Value
         if Value then
@@ -173,7 +174,7 @@ AutoGroupBox:AddToggle('Toggle_Pad2', {
 AutoGroupBox:AddToggle('Toggle_Pad3', {
     Text = 'Teleport to Pad3',
     Default = false,
-    Tooltip = 'Toggle to teleport to Pad3',
+    Tooltip = 'Teleport 3v3 Pad',
     Callback = function(Value)
         Toggles["Pad3"] = Value
         if Value then
@@ -185,7 +186,7 @@ AutoGroupBox:AddToggle('Toggle_Pad3', {
 AutoGroupBox:AddToggle('Toggle_Pad4', {
     Text = 'Teleport to Pad4',
     Default = false,
-    Tooltip = 'Toggle to teleport to Pad4',
+    Tooltip = 'Teleport 4v4 Pad',
     Callback = function(Value)
         Toggles["Pad4"] = Value
         if Value then
@@ -528,6 +529,25 @@ MiscGroupBox:AddSlider('FloatHeightSlider', {
 })
 
 
+RMiscGroupbox:AddToggle('AntiAFK', {
+    Text = 'Enable Anti-AFK',
+    Default = true, -- Default value (true / false)
+    Tooltip = 'Keeps you from being marked as AFK', -- Tooltip description
+
+    Callback = function(Value)
+        if Value then
+            -- Start the Anti-AFK loop
+            game:GetService("RunService").Heartbeat:Connect(function()
+                -- Simulate a small action, like moving
+                game.Players.LocalPlayer.Character.Humanoid:Move(Vector3.new(0, 0, 0))
+                wait(5)  -- Adjust this timing as needed
+            end)
+        else
+            -- Stop the Anti-AFK loop
+            game:GetService("RunService").Heartbeat:Disconnect() 
+        end
+    end
+})
 
 
 

@@ -316,15 +316,7 @@ HBEGroupBox:AddLabel('Hitbox Color'):AddColorPicker('HitboxColorPicker', {
 
 
 
-local aimbotEnabled = false
-local lockType = "Mouse Lock"
-local lockKeybind = "MB2"
-local prediction = {x = 0, y = 0, z = 0}
-local smoothness = 3
-local target = nil
-local lockKeyPressed = false
-
--- Add the toggles, sliders, and dropdowns
+-- Aimbot Toggle (You already have this part)
 RAimlockGroupBox:AddToggle("AimbotToggle", {
     Text = "Enable Aimbot",
     Default = false,
@@ -335,6 +327,7 @@ RAimlockGroupBox:AddToggle("AimbotToggle", {
     end
 })
 
+-- Keybind for locking onto target
 RAimlockGroupBox:AddLabel("Keybind to lock target")
 RAimlockGroupBox:AddKeyPicker("LockKeybind", {
     Default = "MB2",
@@ -346,9 +339,10 @@ RAimlockGroupBox:AddKeyPicker("LockKeybind", {
     end
 })
 
+-- Dropdown for lock type (Mouse Lock or Camera Lock)
 RAimlockGroupBox:AddDropdown("LockTypeDropdown", {
     Values = {"Mouse Lock", "Camera Lock"},
-    Default = 1,
+    Default = 1,  -- Default to Mouse Lock
     Text = "Lock Type",
     Tooltip = "Select whether to lock onto the mouse or camera",
     Callback = function(value)
@@ -357,6 +351,7 @@ RAimlockGroupBox:AddDropdown("LockTypeDropdown", {
     end
 })
 
+-- Prediction sliders (X, Y, Z)
 RAimlockGroupBox:AddSlider("XPrediction", {
     Text = "X Prediction",
     Default = 0,
@@ -396,6 +391,7 @@ RAimlockGroupBox:AddSlider("ZPrediction", {
     end
 })
 
+-- Smoothness slider
 RAimlockGroupBox:AddSlider("Smoothness", {
     Text = "Smoothness",
     Default = 3,
@@ -460,6 +456,7 @@ game:GetService("UserInputService").InputEnded:Connect(function(input)
         print("[cb] Lock key released")
     end
 end)
+
 
 
 

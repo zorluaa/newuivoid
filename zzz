@@ -807,7 +807,7 @@ local Storage = Instance.new("Folder")
 Storage.Parent = CoreGui
 Storage.Name = "Highlight_Storage"
 
-local highlightEnabled = true  -- Flag to toggle highlighting
+local highlightEnabled = false  -- Set to false initially so it's off by default
 
 -- Function to highlight players
 local function Highlight(plr)
@@ -832,8 +832,8 @@ end
 
 -- Toggle function for the highlighting system
 ESPGroupBox:AddToggle('MyToggle', {
-    Text = 'Enable/Disable Highlighting',
-    Default = true,
+    Text = 'Chams ESP',
+    Default = false,  -- Default set to false (off)
     Tooltip = 'Toggle player highlighting',
 
     Callback = function(Value)
@@ -880,7 +880,7 @@ end)
 -- Color Picker for highlight color
 ESPGroupBox:AddLabel('Color'):AddColorPicker('ColorPicker', {
     Default = FillColor,  -- Initial value from the FillColor variable
-    Title = 'Highlight Color', 
+    Title = 'Change Cham Colour', 
     Transparency = 0,  -- No transparency in the picker
 
     Callback = function(Value)
@@ -896,6 +896,7 @@ end)
 
 -- Set the initial color for the picker
 Options.ColorPicker:SetValueRGB(Color3.fromRGB(175, 25, 255))
+
 
 
 

@@ -578,51 +578,48 @@ RMiscGroupBox:AddToggle('AntiAFK', {
 
 
 
-local spinbotEnabled = false   -- Flag to control if spinbot is on or off
-local spinSpeed = 1            -- Default spin speed (1-100)
 
--- Function to rotate the entire character
-local function Spinbot()
-    while spinbotEnabled do
-        local character = lp.Character
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            -- Make the character rotate around its center
-            local rootPart = character.HumanoidRootPart
-            -- Apply rotation to the entire character using CFrame
-            rootPart.CFrame = rootPart.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0)
-        end
-        wait(0.01)  -- Adjust the wait time for smoother rotation
+local camera = game:GetService("Workspace").CurrentCamera
+
+local fovEnabled = false         -- Flag to control if FOV adjustment is on or off
+local fovValue = 70              -- Default FOV value (70)
+
+-- Function to change the camera's FOV
+local function ChangeFOV()
+    while fovEnabled do
+        camera.FieldOfView = fovValue  -- Set the FOV of the camera
+        wait(0.1)  -- Adjust the wait time to update the FOV more smoothly
     end
 end
 
--- Toggle for enabling/disabling the spinbot
-RMiscGroupBox:AddToggle('SpinbotToggle', {
-    Text = 'Enable/Disable Spinbot',
+-- Toggle for enabling/disabling FOV adjustment
+RMiscGroupBox:AddToggle('FOVToggle', {
+    Text = 'Enable/Disable FOV Adjustment',
     Default = false,  -- Initially off
-    Tooltip = 'Toggle spinbot on/off',
+    Tooltip = 'Toggle the camera FOV adjustment on/off',
 
     Callback = function(Value)
-        spinbotEnabled = Value
-        if spinbotEnabled then
-            -- Start the spinbot when it's toggled on
-            Spinbot()
+        fovEnabled = Value
+        if fovEnabled then
+            -- Start changing the FOV when the toggle is enabled
+            ChangeFOV()
         end
-        print('[cb] Spinbot changed to:', Value)
+        print('[cb] FOV adjustment enabled:', Value)
     end
 })
 
--- Slider for controlling spin speed (1-100)
-RMiscGroupBox:AddSlider('SpinSpeedSlider', {
-    Text = 'Spin Speed (1 - 100)',
-    Default = 1,  -- Default spin speed
-    Min = 1,
-    Max = 100,
+-- Slider for controlling FOV (70-240)
+RMiscGroupBox:AddSlider('FOVSlider', {
+    Text = 'Field of View (70 - 240)',
+    Default = 70,  -- Default FOV value
+    Min = 70,
+    Max = 240,
     Rounding = 1,
     Compact = false,
 
     Callback = function(Value)
-        spinSpeed = Value
-        print('[cb] Spin speed changed to:', Value)
+        fovValue = Value
+        print('[cb] FOV changed to:', Value)
     end
 })
 

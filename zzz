@@ -555,6 +555,7 @@ RMiscGroupBox:AddToggle('AntiAFK', {
 })
 
 -- Advertise Toggle
+-- Advertise Toggle
 RMiscGroupBox:AddToggle('Advertise', {
     Text = 'Advertise Void.lua',
     Default = false, -- Default set to false (unchecked)
@@ -562,7 +563,7 @@ RMiscGroupBox:AddToggle('Advertise', {
 
     Callback = function(Value)
         if Value then
-            -- Ensure the message is sent to the chat correctly
+            -- Send messages to the chat using the correct path
             local chatService = game:GetService("ReplicatedStorage"):WaitForChild("DefaultChatSystemChatEvents")
             local sayMessage = chatService:WaitForChild("SayMessageRequest")
 
@@ -575,7 +576,6 @@ RMiscGroupBox:AddToggle('Advertise', {
         end
     end
 })
-
 
 
 

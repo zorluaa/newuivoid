@@ -137,9 +137,12 @@ local Toggles = {
     ["Pad4"] = false
 }
 
-local function TeleportToPad(pad)
-    if Toggles[pad] and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        LocalPlayer.Character.HumanoidRootPart.CFrame = DuelPads[pad].CFrame
+local function TeleportLoop(pad)
+    while Toggles[pad] do
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            LocalPlayer.Character.HumanoidRootPart.CFrame = DuelPads[pad].CFrame
+        end
+        task.wait(1) -- Teleport every second
     end
 end
 
@@ -149,7 +152,9 @@ AutoGroupBox:AddToggle('Toggle_Pad1', {
     Tooltip = 'Toggle to teleport to Pad1',
     Callback = function(Value)
         Toggles["Pad1"] = Value
-        if Value then TeleportToPad("Pad1") end
+        if Value then
+            task.spawn(function() TeleportLoop("Pad1") end)
+        end
     end
 })
 
@@ -159,7 +164,9 @@ AutoGroupBox:AddToggle('Toggle_Pad2', {
     Tooltip = 'Toggle to teleport to Pad2',
     Callback = function(Value)
         Toggles["Pad2"] = Value
-        if Value then TeleportToPad("Pad2") end
+        if Value then
+            task.spawn(function() TeleportLoop("Pad2") end)
+        end
     end
 })
 
@@ -169,7 +176,9 @@ AutoGroupBox:AddToggle('Toggle_Pad3', {
     Tooltip = 'Toggle to teleport to Pad3',
     Callback = function(Value)
         Toggles["Pad3"] = Value
-        if Value then TeleportToPad("Pad3") end
+        if Value then
+            task.spawn(function() TeleportLoop("Pad3") end)
+        end
     end
 })
 
@@ -179,9 +188,12 @@ AutoGroupBox:AddToggle('Toggle_Pad4', {
     Tooltip = 'Toggle to teleport to Pad4',
     Callback = function(Value)
         Toggles["Pad4"] = Value
-        if Value then TeleportToPad("Pad4") end
+        if Value then
+            task.spawn(function() TeleportLoop("Pad4") end)
+        end
     end
 })
+
 
 
 

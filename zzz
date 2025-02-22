@@ -552,6 +552,7 @@ RMiscGroupBox:AddToggle('AntiAFK', {
     end
 })
 
+
 RMiscGroupBox:AddToggle('RemoveHead', {
     Text = 'Remove My Head',
     Default = false, -- Default value (true / false)

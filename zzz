@@ -556,30 +556,7 @@ RMiscGroupBox:AddToggle('AntiAFK', {
 
 -- Advertise Toggle
 -- Advertise Toggle
-RMiscGroupBox:AddToggle('Advertise', {
-    Text = 'Advertise Void.lua',
-    Default = false, -- Default set to false (unchecked)
-    Tooltip = 'Advertises Void.lua in the chat',
 
-    Callback = function(Value)
-        if Value then
-            -- Ensure we are accessing the correct chat path and it's available
-            local ReplicatedStorage = game:GetService("ReplicatedStorage")
-            local chatService = ReplicatedStorage:WaitForChild("DefaultChatSystemChatEvents")
-            local sayMessage = chatService:WaitForChild("SayMessageRequest")
-            
-            -- Debugging to ensure the chat path is correct
-            print("Chat Path Found:", sayMessage)
-
-            -- Send messages to the chat with slight delays
-            sayMessage:FireServer("Void.lua Is the best Mvsd Script", "All")
-            wait(1)
-            sayMessage:FireServer("Void On Top", "All")
-            wait(1)
-            sayMessage:FireServer("Zor <3", "All")
-        end
-    end
-})
 
 
 

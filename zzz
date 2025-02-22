@@ -316,133 +316,151 @@ HBEGroupBox:AddLabel('Hitbox Color'):AddColorPicker('HitboxColorPicker', {
 
 
 
--- Variables for controlling the aimbot
 local aimbotEnabled = false
-local lockKeybind = 'MB2'  -- Default lock keybind
-local lockType = 'Mouse Lock'  -- Default lock type
-local prediction = {x = 0, y = 0, z = 0}  -- Default prediction
-local smoothness = 3  -- Default smoothness
+local lockType = "Mouse Lock"
+local lockKeybind = "MB2"
+local prediction = {x = 0, y = 0, z = 0}
+local smoothness = 3
+local target = nil
+local lockKeyPressed = false
 
--- Aimbot toggle
-RAimlockGroupBox:AddToggle('AimbotToggle', {
-    Text = 'Aimbot',
+-- Add the toggles, sliders, and dropdowns
+RAimlockGroupBox:AddToggle("AimbotToggle", {
+    Text = "Enable Aimbot",
     Default = false,
-    Tooltip = 'Enable or disable the aimbot',
-    Callback = function(Value)
-        aimbotEnabled = Value  -- Update aimbotEnabled when the toggle changes
-        print('[cb] Aimbot toggled:', Value)
+    Tooltip = "Toggle the aimbot on or off",
+    Callback = function(value)
+        aimbotEnabled = value
+        print("[cb] Aimbot toggled:", value)
     end
 })
 
--- Keybind for locking onto the target
-RAimlockGroupBox:AddLabel('Keybind to lock target')
-RAimlockGroupBox:AddKeyPicker('LockKeybind', {
-    Default = 'MB2',
-    SyncToggleState = true, 
-    Tooltip = 'Press to lock onto the target',
-    Callback = function(Value)
-        lockKeybind = Value  -- Update lockKeybind when the key changes
-        print('[cb] Lock Keybind set to:', Value)
+RAimlockGroupBox:AddLabel("Keybind to lock target")
+RAimlockGroupBox:AddKeyPicker("LockKeybind", {
+    Default = "MB2",
+    SyncToggleState = true,
+    Tooltip = "Keybind to lock onto the target",
+    Callback = function(value)
+        lockKeybind = value
+        print("[cb] Lock Keybind set to:", value)
     end
 })
 
--- Dropdown for selecting lock type (Mouse or Camera lock)
-RAimlockGroupBox:AddDropdown('LockTypeDropdown', {
-    Values = {'Mouse Lock', 'Camera Lock'},
-    Default = 1, -- Default to Mouse Lock
-    Text = 'Lock Type',
-    Tooltip = 'Select whether to lock the aim to the mouse or camera',
-    Callback = function(Value)
-        lockType = Value  -- Update lockType when dropdown changes
-        print('[cb] Lock type changed to:', Value)
+RAimlockGroupBox:AddDropdown("LockTypeDropdown", {
+    Values = {"Mouse Lock", "Camera Lock"},
+    Default = 1,
+    Text = "Lock Type",
+    Tooltip = "Select whether to lock onto the mouse or camera",
+    Callback = function(value)
+        lockType = value
+        print("[cb] Lock type changed to:", value)
     end
 })
 
--- Prediction sliders for X, Y, and Z axes
-RAimlockGroupBox:AddSlider('XPrediction', {
-    Text = 'X Prediction',
+RAimlockGroupBox:AddSlider("XPrediction", {
+    Text = "X Prediction",
     Default = 0,
     Min = -5,
     Max = 5,
     Rounding = 2,
     Compact = true,
-    Callback = function(Value)
-        prediction.x = Value  -- Update X Prediction when slider changes
-        print('[cb] X Prediction:', Value)
+    Callback = function(value)
+        prediction.x = value
+        print("[cb] X Prediction set to:", value)
     end
 })
 
-RAimlockGroupBox:AddSlider('YPrediction', {
-    Text = 'Y Prediction',
+RAimlockGroupBox:AddSlider("YPrediction", {
+    Text = "Y Prediction",
     Default = 0,
     Min = -5,
     Max = 5,
     Rounding = 2,
     Compact = true,
-    Callback = function(Value)
-        prediction.y = Value  -- Update Y Prediction when slider changes
-        print('[cb] Y Prediction:', Value)
+    Callback = function(value)
+        prediction.y = value
+        print("[cb] Y Prediction set to:", value)
     end
 })
 
-RAimlockGroupBox:AddSlider('ZPrediction', {
-    Text = 'Z Prediction',
+RAimlockGroupBox:AddSlider("ZPrediction", {
+    Text = "Z Prediction",
     Default = 0,
     Min = -5,
     Max = 5,
     Rounding = 2,
     Compact = true,
-    Callback = function(Value)
-        prediction.z = Value  -- Update Z Prediction when slider changes
-        print('[cb] Z Prediction:', Value)
+    Callback = function(value)
+        prediction.z = value
+        print("[cb] Z Prediction set to:", value)
     end
 })
 
--- Smoothness slider for how smooth or blatant the aimbot is
-RAimlockGroupBox:AddSlider('Smoothness', {
-    Text = 'Smoothness',
+RAimlockGroupBox:AddSlider("Smoothness", {
+    Text = "Smoothness",
     Default = 3,
     Min = 0,
     Max = 10,
     Rounding = 1,
     Compact = true,
-    Callback = function(Value)
-        smoothness = Value  -- Update smoothness when slider changes
-        print('[cb] Smoothness set to:', Value)
+    Callback = function(value)
+        smoothness = value
+        print("[cb] Smoothness set to:", value)
     end
 })
 
-
 -- Aimbot Logic
-game:GetService("UserInputService").InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton2 and aimbotEnabled then
-        -- Lock the target when the keybind is pressed and aimbot is enabled
-        if input.UserInputType == Enum.UserInputType.MouseButton2 then
-            if lockType == 'Mouse Lock' then
-                -- Implement mouse lock logic here (e.g., move aim to mouse position)
-                print('Locking onto Mouse position...')
-            elseif lockType == 'Camera Lock' then
-                -- Implement camera lock logic here (e.g., move camera towards target)
-                print('Locking onto Camera position...')
-            end
+local function lockOntoTarget()
+    if aimbotEnabled then
+        -- Get the player's target (this can be expanded to find a valid target)
+        local player = game:GetService("Players").LocalPlayer
+        if lockType == "Mouse Lock" then
+            target = game:GetService("Players").LocalPlayer:GetMouse().Hit.p
+        elseif lockType == "Camera Lock" then
+            target = workspace.CurrentCamera.CFrame.p + workspace.CurrentCamera.CFrame.lookVector * 100
+        end
+
+        -- Apply prediction offset
+        target = target + Vector3.new(prediction.x, prediction.y, prediction.z)
+
+        -- Smooth aimbot movement
+        local currentPos = workspace.CurrentCamera.CFrame.p
+        local smoothTarget = currentPos:Lerp(target, smoothness / 10)  -- Lerp for smoothness
+
+        -- Move the aimbot to the target position (could be camera or character position)
+        -- Example of moving the camera to the target
+        workspace.CurrentCamera.CFrame = CFrame.new(smoothTarget)
+        print("Aimbot moving to:", smoothTarget)
+    end
+end
+
+-- Input listener for keybind to lock onto target
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end  -- Ignore input if it's processed by the game
+
+    if input.UserInputType == Enum.UserInputType.MouseButton2 then  -- Lock onto target when MB2 is pressed
+        if lockKeybind == "MB2" then
+            lockKeyPressed = true
+            print("[cb] Lock key pressed")
         end
     end
 end)
 
--- Apply prediction and smoothness on every frame
+-- Continuous check to update the aimbot's target position
 game:GetService("RunService").RenderStepped:Connect(function()
-    if aimbotEnabled then
-        -- Example of prediction logic (e.g., using target position + prediction offset)
-        local target = -- (Logic to get target position)
-        local predictedPosition = target + Vector3.new(prediction.x, prediction.y, prediction.z)
-        
-        -- Apply smoothness logic (interpolating between current and predicted position)
-        local smoothPosition = predictedPosition:Lerp(target, smoothness / 10)
-        
-        -- Move the aimbot towards the smooth position (example logic)
-        print('Aimbot moving towards:', smoothPosition)
+    if lockKeyPressed and aimbotEnabled then
+        lockOntoTarget()
     end
 end)
+
+-- Listen for key release to stop locking
+game:GetService("UserInputService").InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton2 then
+        lockKeyPressed = false
+        print("[cb] Lock key released")
+    end
+end)
+
 
 
 

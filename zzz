@@ -199,122 +199,8 @@ AutoGroupBox:AddToggle('Toggle_Pad4', {
 
 
 
+--#region
 
-
-
-
-
-
--- hbe
-
-
-local isEnabled = false  -- Tracks whether hitbox modification is enabled
-local hitboxSize = 10     -- Default hitbox size
-local transparency = 0.5  -- Default transparency (range: 0 to 1)
-local boxColor = Color3.fromRGB(255, 255, 255)  -- Default hitbox color
-
-local players = game:GetService("Players")
-local runService = game:GetService("RunService")
-
--- Function to modify hitboxes
-local function modifyHitboxes()
-    for _, player in pairs(players:GetPlayers()) do
-        if player ~= players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local rootPart = player.Character.HumanoidRootPart
-            rootPart.Size = Vector3.new(hitboxSize, hitboxSize, hitboxSize)  -- Adjust size
-            rootPart.Transparency = transparency  -- Adjust transparency
-            rootPart.Material = Enum.Material.Neon  -- Set material to Neon for visibility
-            rootPart.CanCollide = true
-            rootPart.Color = boxColor  -- Apply color from the color picker
-        end
-    end
-end
-
--- Continuously apply modifications if enabled
-runService.RenderStepped:Connect(function()
-    if isEnabled then
-        modifyHitboxes()
-    end
-end)
-
--- **Toggle for Hitbox Expander**
-HBEGroupBox:AddToggle('HitboxToggle', {
-    Text = 'Hitbox Expander',
-    Default = false,
-    Tooltip = 'Expands enemy hitboxes to make aiming easier',
-
-    Callback = function(state)
-        isEnabled = state
-        print("Hitbox Modifier:", state)
-        if not isEnabled then
-            -- Reset hitboxes when disabled
-            for _, player in pairs(players:GetPlayers()) do
-                if player ~= players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                    local rootPart = player.Character.HumanoidRootPart
-                    rootPart.Size = Vector3.new(2, 2, 1)  -- Reset to default size
-                    rootPart.Transparency = 0           -- Reset transparency
-                    rootPart.Material = Enum.Material.Plastic  -- Reset material
-                    rootPart.CanCollide = true
-                    rootPart.Color = Color3.fromRGB(255, 255, 255)  -- Reset color
-                end
-            end
-        end
-    end
-})
-
--- **Slider to adjust hitbox size**
-HBEGroupBox:AddSlider('HitboxSizeSlider', {
-    Text = 'Hitbox Size',
-    Default = hitboxSize,
-    Min = 2,
-    Max = 50,
-    Rounding = 1,
-    Compact = false,
-
-    Callback = function(Value)
-        hitboxSize = Value
-        print("Hitbox Size:", Value)
-        if isEnabled then
-            modifyHitboxes()  -- Update hitboxes when size is changed while enabled
-        end
-    end
-})
-
--- **Slider to adjust transparency**
-HBEGroupBox:AddSlider('TransparencySlider', {
-    Text = 'Transparency',
-    Default = transparency * 100, -- Convert transparency to 0-100 scale
-    Min = 0,
-    Max = 100,
-    Rounding = 1,
-    Compact = false,
-
-    Callback = function(Value)
-        transparency = Value / 100  -- Convert back to 0-1 range
-        print("Transparency:", transparency)
-        if isEnabled then
-            modifyHitboxes()  -- Update transparency when changed
-        end
-    end
-})
-
--- **Color Picker for Hitbox Color**
-HBEGroupBox:AddLabel('Hitbox Color'):AddColorPicker('HitboxColorPicker', {
-    Default = boxColor, 
-    Title = 'Select Hitbox Color', -- Title when opened
-
-    Callback = function(Value)
-        boxColor = Value
-        print("Box Color:", Value)
-        if isEnabled then
-            modifyHitboxes()  -- Update hitboxes when color is changed
-        end
-    end
-})
-
-
-
--- Roblox Services
 local Camera = workspace.CurrentCamera
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -471,6 +357,123 @@ task.spawn(function()
         end
     end
 end)
+
+
+
+
+
+
+
+-- hbe
+
+
+local isEnabled = false  -- Tracks whether hitbox modification is enabled
+local hitboxSize = 10     -- Default hitbox size
+local transparency = 0.5  -- Default transparency (range: 0 to 1)
+local boxColor = Color3.fromRGB(255, 255, 255)  -- Default hitbox color
+
+local players = game:GetService("Players")
+local runService = game:GetService("RunService")
+
+-- Function to modify hitboxes
+local function modifyHitboxes()
+    for _, player in pairs(players:GetPlayers()) do
+        if player ~= players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local rootPart = player.Character.HumanoidRootPart
+            rootPart.Size = Vector3.new(hitboxSize, hitboxSize, hitboxSize)  -- Adjust size
+            rootPart.Transparency = transparency  -- Adjust transparency
+            rootPart.Material = Enum.Material.Neon  -- Set material to Neon for visibility
+            rootPart.CanCollide = true
+            rootPart.Color = boxColor  -- Apply color from the color picker
+        end
+    end
+end
+
+-- Continuously apply modifications if enabled
+runService.RenderStepped:Connect(function()
+    if isEnabled then
+        modifyHitboxes()
+    end
+end)
+
+-- **Toggle for Hitbox Expander**
+HBEGroupBox:AddToggle('HitboxToggle', {
+    Text = 'Hitbox Expander',
+    Default = false,
+    Tooltip = 'Expands enemy hitboxes to make aiming easier',
+
+    Callback = function(state)
+        isEnabled = state
+        print("Hitbox Modifier:", state)
+        if not isEnabled then
+            -- Reset hitboxes when disabled
+            for _, player in pairs(players:GetPlayers()) do
+                if player ~= players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    local rootPart = player.Character.HumanoidRootPart
+                    rootPart.Size = Vector3.new(2, 2, 1)  -- Reset to default size
+                    rootPart.Transparency = 0           -- Reset transparency
+                    rootPart.Material = Enum.Material.Plastic  -- Reset material
+                    rootPart.CanCollide = true
+                    rootPart.Color = Color3.fromRGB(255, 255, 255)  -- Reset color
+                end
+            end
+        end
+    end
+})
+
+-- **Slider to adjust hitbox size**
+HBEGroupBox:AddSlider('HitboxSizeSlider', {
+    Text = 'Hitbox Size',
+    Default = hitboxSize,
+    Min = 2,
+    Max = 50,
+    Rounding = 1,
+    Compact = false,
+
+    Callback = function(Value)
+        hitboxSize = Value
+        print("Hitbox Size:", Value)
+        if isEnabled then
+            modifyHitboxes()  -- Update hitboxes when size is changed while enabled
+        end
+    end
+})
+
+-- **Slider to adjust transparency**
+HBEGroupBox:AddSlider('TransparencySlider', {
+    Text = 'Transparency',
+    Default = transparency * 100, -- Convert transparency to 0-100 scale
+    Min = 0,
+    Max = 100,
+    Rounding = 1,
+    Compact = false,
+
+    Callback = function(Value)
+        transparency = Value / 100  -- Convert back to 0-1 range
+        print("Transparency:", transparency)
+        if isEnabled then
+            modifyHitboxes()  -- Update transparency when changed
+        end
+    end
+})
+
+-- **Color Picker for Hitbox Color**
+HBEGroupBox:AddLabel('Hitbox Color'):AddColorPicker('HitboxColorPicker', {
+    Default = boxColor, 
+    Title = 'Select Hitbox Color', -- Title when opened
+
+    Callback = function(Value)
+        boxColor = Value
+        print("Box Color:", Value)
+        if isEnabled then
+            modifyHitboxes()  -- Update hitboxes when color is changed
+        end
+    end
+})
+
+
+
+-- Roblox Services
 
 
 

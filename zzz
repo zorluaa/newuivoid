@@ -131,61 +131,69 @@ local DuelPads = {
 }
 
 local function TeleportToPad(pad)
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        LocalPlayer.Character.HumanoidRootPart.CFrame = pad.CFrame
+    while Toggles[pad] do
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            LocalPlayer.Character.HumanoidRootPart.CFrame = DuelPads[pad].CFrame
+        end
+        task.wait(1) -- Prevents excessive teleporting
     end
 end
 
-local Toggles = {}
+local Toggles = {
+    ["Pad1"] = false,
+    ["Pad2"] = false,
+    ["Pad3"] = false,
+    ["Pad4"] = false
+}
 
 AutoGroupBox:AddToggle('Toggle_Pad1', {
     Text = 'Teleport to Pad1',
-    Default = true,
+    Default = false,
     Tooltip = 'Toggle to teleport to Pad1',
     Callback = function(Value)
         print('[cb] Pad1 changed to:', Value)
         Toggles["Pad1"] = Value
         if Value then
-            TeleportToPad(DuelPads["Pad1"])
+            task.spawn(function() TeleportToPad("Pad1") end)
         end
     end
 })
 
 AutoGroupBox:AddToggle('Toggle_Pad2', {
     Text = 'Teleport to Pad2',
-    Default = true,
+    Default = false,
     Tooltip = 'Toggle to teleport to Pad2',
     Callback = function(Value)
         print('[cb] Pad2 changed to:', Value)
         Toggles["Pad2"] = Value
         if Value then
-            TeleportToPad(DuelPads["Pad2"])
+            task.spawn(function() TeleportToPad("Pad2") end)
         end
     end
 })
 
 AutoGroupBox:AddToggle('Toggle_Pad3', {
     Text = 'Teleport to Pad3',
-    Default = true,
+    Default = false,
     Tooltip = 'Toggle to teleport to Pad3',
     Callback = function(Value)
         print('[cb] Pad3 changed to:', Value)
         Toggles["Pad3"] = Value
         if Value then
-            TeleportToPad(DuelPads["Pad3"])
+            task.spawn(function() TeleportToPad("Pad3") end)
         end
     end
 })
 
 AutoGroupBox:AddToggle('Toggle_Pad4', {
     Text = 'Teleport to Pad4',
-    Default = true,
+    Default = false,
     Tooltip = 'Toggle to teleport to Pad4',
     Callback = function(Value)
         print('[cb] Pad4 changed to:', Value)
         Toggles["Pad4"] = Value
         if Value then
-            TeleportToPad(DuelPads["Pad4"])
+            task.spawn(function() TeleportToPad("Pad4") end)
         end
     end
 })

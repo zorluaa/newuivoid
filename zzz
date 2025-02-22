@@ -964,12 +964,12 @@ function Library:NewSkeleton(Player, Visible, Color, Alpha, Thickness)
 end
 
 -- UI Elements and Skeleton Handling (Additions)
-local LeftGroupBox = {} -- Assuming this is where you're adding UI components.
+local HBEGroupBox = {} -- Assuming this is where you're adding UI components.
 
 -- Toggle for Skeleton Visibility
-ESPGroupBox:AddToggle('SkeletonToggle', {
+HBEGroupBox:AddToggle('SkeletonToggle', {
     Text = 'Toggle Skeleton Visibility',
-    Default = true,
+    Default = false, -- Set to false to start with skeletons off
     Tooltip = 'Toggle the visibility of skeletons.',
     Callback = function(Value)
         for _, skeleton in next, Skeletons do
@@ -979,7 +979,7 @@ ESPGroupBox:AddToggle('SkeletonToggle', {
 })
 
 -- Slider for Skeleton Line Thickness
-ESPGroupBox:AddSlider('SkeletonThickness', {
+HBEGroupBox:AddSlider('SkeletonThickness', {
     Text = 'Skeleton Line Thickness',
     Default = 1,
     Min = 1,
@@ -993,9 +993,9 @@ ESPGroupBox:AddSlider('SkeletonThickness', {
 })
 
 -- Color Picker for Skeleton Line Color
-ESPGroupBox:AddColorPicker('SkeletonColorPicker', {
+HBEGroupBox:AddColorPicker('SkeletonColorPicker', {
     Text = 'Pick Skeleton Color',
-    Default = Color3.fromRGB(0, 255, 0),
+    Default = Color3.fromRGB(0, 255, 0), -- Default color green
     Callback = function(Value)
         for _, skeleton in next, Skeletons do
             skeleton:SetColor(Value)
@@ -1007,12 +1007,12 @@ ESPGroupBox:AddColorPicker('SkeletonColorPicker', {
 local Skeletons = {}
 for _, Player in next, game.Players:GetChildren() do
     if Player ~= LocalPlayer then
-        table.insert(Skeletons, Library:NewSkeleton(Player, true))
+        table.insert(Skeletons, Library:NewSkeleton(Player, false)) -- Default to false to hide initially
     end
 end
 
 game.Players.PlayerAdded:Connect(function(Player)
-    table.insert(Skeletons, Library:NewSkeleton(Player, true))
+    table.insert(Skeletons, Library:NewSkeleton(Player, false)) -- Default to false to hide initially
 end)
 
 -- Update loop for skeletons
@@ -1021,4 +1021,5 @@ RS.Heartbeat:Connect(function()
         skeleton:Update()
     end
 end)
+
 

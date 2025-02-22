@@ -49,7 +49,6 @@ local ESP = {
 local AutoGroupBox = Main.Main:AddLeftGroupbox('Auto')
 local HBEGroupBox = Aiming.HBE:AddLeftGroupbox('HBE')
 local MiscGroupBox = Misc.Misc:AddLeftGroupbox('Misc')
-local RMiscGroupbox = Misc.Main:AddRightGroupbox('Misc #2')
 local ESPGroupBox = ESP.ESP:AddLeftGroupbox('ESP')
 
 
@@ -529,7 +528,7 @@ MiscGroupBox:AddSlider('FloatHeightSlider', {
 })
 
 
-RMiscGroupbox:AddToggle('AntiAFK', {
+MiscGroupBox:AddToggle('AntiAFK', {
     Text = 'Enable Anti-AFK',
     Default = true, -- Default value (true / false)
     Tooltip = 'Keeps you from being marked as AFK', -- Tooltip description

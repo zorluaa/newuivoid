@@ -48,6 +48,7 @@ local ESP = {
 -- Create group boxes for each tab separately
 local AutoGroupBox = Main.Main:AddLeftGroupbox('Auto')
 local HBEGroupBox = Aiming.HBE:AddLeftGroupbox('HBE')
+local RAimlockGroupBox = Misc.HBE:AddRightGroupbox('Aimlock');
 local MiscGroupBox = Misc.Misc:AddLeftGroupbox('Misc')
 local RMiscGroupBox = Misc.Misc:AddRightGroupbox('Misc #2');
 local ESPGroupBox = ESP.ESP:AddLeftGroupbox('ESP')
@@ -310,6 +311,128 @@ HBEGroupBox:AddLabel('Hitbox Color'):AddColorPicker('HitboxColorPicker', {
         end
     end
 })
+
+
+-- Aimbot toggle and prediction setup
+
+-- Aimbot toggle
+RAimlockGroupBox:AddToggle('AimbotToggle', {
+    Text = 'Aimbot',
+    Default = false,
+    Tooltip = 'Enable or disable the aimbot',
+    Callback = function(Value)
+        print('[cb] Aimbot toggled:', Value)
+    end
+})
+
+-- Keybind for locking onto the target
+RAimlockGroupBox:AddLabel('Keybind to lock target')
+RAimlockGroupBox:AddKeyPicker('LockKeybind', {
+    Default = 'MB2',
+    SyncToggleState = true, 
+    Tooltip = 'Press to lock onto the target',
+    Callback = function(Value)
+        print('[cb] Lock Keybind set to:', Value)
+    end
+})
+
+-- Dropdown for selecting lock type (Mouse or Camera lock)
+RAimlockGroupBox:AddDropdown('LockTypeDropdown', {
+    Values = {'Mouse Lock', 'Camera Lock'},
+    Default = 1, -- Default to Mouse Lock
+    Text = 'Lock Type',
+    Tooltip = 'Select whether to lock the aim to the mouse or camera',
+    Callback = function(Value)
+        print('[cb] Lock type changed to:', Value)
+    end
+})
+
+-- Prediction sliders for X, Y, and Z axes
+RAimlockGroupBox:AddSlider('XPrediction', {
+    Text = 'X Prediction',
+    Default = 0,
+    Min = -5,
+    Max = 5,
+    Rounding = 2,
+    Compact = true,
+    Callback = function(Value)
+        print('[cb] X Prediction:', Value)
+    end
+})
+
+RAimlockGroupBox:AddSlider('YPrediction', {
+    Text = 'Y Prediction',
+    Default = 0,
+    Min = -5,
+    Max = 5,
+    Rounding = 2,
+    Compact = true,
+    Callback = function(Value)
+        print('[cb] Y Prediction:', Value)
+    end
+})
+
+RAimlockGroupBox:AddSlider('ZPrediction', {
+    Text = 'Z Prediction',
+    Default = 0,
+    Min = -5,
+    Max = 5,
+    Rounding = 2,
+    Compact = true,
+    Callback = function(Value)
+        print('[cb] Z Prediction:', Value)
+    end
+})
+
+-- Smoothness slider for how smooth or blatant the aimbot is
+RAimlockGroupBox:AddSlider('Smoothness', {
+    Text = 'Smoothness',
+    Default = 3,
+    Min = 0,
+    Max = 10,
+    Rounding = 1,
+    Compact = true,
+    Callback = function(Value)
+        print('[cb] Smoothness set to:', Value)
+    end
+})
+
+-- Example of the aimbot logic
+local aimbotEnabled = false
+local lockKeybind = 'MB2'  -- Default lock keybind
+local lockType = 'Mouse Lock'  -- Default lock type
+local prediction = {x = 0, y = 0, z = 0}  -- Default prediction
+local smoothness = 3  -- Default smoothness
+
+-- Listen for the toggle to turn on/off the aimbot
+game:GetService("UserInputService").InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton2 and aimbotEnabled then
+        -- Lock the target with the appropriate lock type
+        if lockType == 'Mouse Lock' then
+            -- Implement mouse lock logic here
+        elseif lockType == 'Camera Lock' then
+            -- Implement camera lock logic here
+        end
+    end
+end)
+
+-- Example for handling prediction and smoothness
+game:GetService("RunService").RenderStepped:Connect(function()
+    if aimbotEnabled then
+        -- Apply prediction adjustments
+        local target = -- (Logic to get target position)
+        local predictedPosition = target + Vector3.new(prediction.x, prediction.y, prediction.z)
+        -- Smooth the movement based on the smoothness value
+        -- (Apply smoothness logic here for the aimbot)
+    end
+end)
+
+
+
+
+
+
+
 -- Misc
 
 -- MISC FEATURES --
@@ -767,4 +890,3 @@ ESPGroupBox:AddSlider('NameESP_Size', {
 
 -- Start the ESP system
 setupESP()
-

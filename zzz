@@ -316,11 +316,22 @@ HBEGroupBox:AddLabel('Hitbox Color'):AddColorPicker('HitboxColorPicker', {
 -- Aimbot toggle and prediction setup
 
 -- Aimbot toggle
+
+
+-- Variables for controlling the aimbot
+local aimbotEnabled = false
+local lockKeybind = 'MB2'  -- Default lock keybind
+local lockType = 'Mouse Lock'  -- Default lock type
+local prediction = {x = 0, y = 0, z = 0}  -- Default prediction
+local smoothness = 3  -- Default smoothness
+
+-- Aimbot toggle
 RAimlockGroupBox:AddToggle('AimbotToggle', {
     Text = 'Aimbot',
     Default = false,
     Tooltip = 'Enable or disable the aimbot',
     Callback = function(Value)
+        aimbotEnabled = Value  -- Update aimbotEnabled when the toggle changes
         print('[cb] Aimbot toggled:', Value)
     end
 })
@@ -332,6 +343,7 @@ RAimlockGroupBox:AddKeyPicker('LockKeybind', {
     SyncToggleState = true, 
     Tooltip = 'Press to lock onto the target',
     Callback = function(Value)
+        lockKeybind = Value  -- Update lockKeybind when the key changes
         print('[cb] Lock Keybind set to:', Value)
     end
 })
@@ -343,6 +355,7 @@ RAimlockGroupBox:AddDropdown('LockTypeDropdown', {
     Text = 'Lock Type',
     Tooltip = 'Select whether to lock the aim to the mouse or camera',
     Callback = function(Value)
+        lockType = Value  -- Update lockType when dropdown changes
         print('[cb] Lock type changed to:', Value)
     end
 })
@@ -356,6 +369,7 @@ RAimlockGroupBox:AddSlider('XPrediction', {
     Rounding = 2,
     Compact = true,
     Callback = function(Value)
+        prediction.x = Value  -- Update X Prediction when slider changes
         print('[cb] X Prediction:', Value)
     end
 })
@@ -368,6 +382,7 @@ RAimlockGroupBox:AddSlider('YPrediction', {
     Rounding = 2,
     Compact = true,
     Callback = function(Value)
+        prediction.y = Value  -- Update Y Prediction when slider changes
         print('[cb] Y Prediction:', Value)
     end
 })
@@ -380,6 +395,7 @@ RAimlockGroupBox:AddSlider('ZPrediction', {
     Rounding = 2,
     Compact = true,
     Callback = function(Value)
+        prediction.z = Value  -- Update Z Prediction when slider changes
         print('[cb] Z Prediction:', Value)
     end
 })
@@ -393,39 +409,44 @@ RAimlockGroupBox:AddSlider('Smoothness', {
     Rounding = 1,
     Compact = true,
     Callback = function(Value)
+        smoothness = Value  -- Update smoothness when slider changes
         print('[cb] Smoothness set to:', Value)
     end
 })
 
--- Example of the aimbot logic
-local aimbotEnabled = false
-local lockKeybind = 'MB2'  -- Default lock keybind
-local lockType = 'Mouse Lock'  -- Default lock type
-local prediction = {x = 0, y = 0, z = 0}  -- Default prediction
-local smoothness = 3  -- Default smoothness
 
--- Listen for the toggle to turn on/off the aimbot
+
+-- Aimbot Logic
 game:GetService("UserInputService").InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton2 and aimbotEnabled then
-        -- Lock the target with the appropriate lock type
-        if lockType == 'Mouse Lock' then
-            -- Implement mouse lock logic here
-        elseif lockType == 'Camera Lock' then
-            -- Implement camera lock logic here
+        -- Lock the target when the keybind is pressed and aimbot is enabled
+        if input.UserInputType == Enum.UserInputType.MouseButton2 then
+            if lockType == 'Mouse Lock' then
+                -- Implement mouse lock logic here (e.g., move aim to mouse position)
+                print('Locking onto Mouse position...')
+            elseif lockType == 'Camera Lock' then
+                -- Implement camera lock logic here (e.g., move camera towards target)
+                print('Locking onto Camera position...')
+            end
         end
     end
 end)
 
--- Example for handling prediction and smoothness
+-- Apply prediction and smoothness on every frame
 game:GetService("RunService").RenderStepped:Connect(function()
     if aimbotEnabled then
-        -- Apply prediction adjustments
+        -- Example of prediction logic (e.g., using target position + prediction offset)
         local target = -- (Logic to get target position)
         local predictedPosition = target + Vector3.new(prediction.x, prediction.y, prediction.z)
-        -- Smooth the movement based on the smoothness value
-        -- (Apply smoothness logic here for the aimbot)
+        
+        -- Apply smoothness logic (interpolating between current and predicted position)
+        local smoothPosition = predictedPosition:Lerp(target, smoothness / 10)
+        
+        -- Move the aimbot towards the smooth position (example logic)
+        print('Aimbot moving towards:', smoothPosition)
     end
 end)
+
 
 
 

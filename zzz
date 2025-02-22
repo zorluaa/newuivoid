@@ -800,13 +800,16 @@ local OutlineTransparency = 0
 
 local CoreGui = game:FindService("CoreGui")
 local Players = game:FindService("Players")
+local lp = Players.LocalPlayer
 local connections = {}
 
 local Storage = Instance.new("Folder")
 Storage.Parent = CoreGui
 Storage.Name = "Highlight_Storage"
 
--- Highlight creation function
+local highlightEnabled = true  -- Flag to toggle highlighting
+
+-- Function to highlight players
 local function Highlight(plr)
     local Highlight = Instance.new("Highlight")
     Highlight.Name = plr.Name
@@ -816,7 +819,7 @@ local function Highlight(plr)
     Highlight.OutlineColor = OutlineColor
     Highlight.OutlineTransparency = OutlineTransparency
     Highlight.Parent = Storage
-    
+
     local plrchar = plr.Character
     if plrchar then
         Highlight.Adornee = plrchar
@@ -827,13 +830,43 @@ local function Highlight(plr)
     end)
 end
 
--- Function to handle player highlights
-Players.PlayerAdded:Connect(Highlight)
-for _, plr in next, Players:GetPlayers() do
-    Highlight(plr)
+-- Toggle function for the highlighting system
+ESPGroupBox:AddToggle('MyToggle', {
+    Text = 'Enable/Disable Highlighting',
+    Default = true,
+    Tooltip = 'Toggle player highlighting',
+
+    Callback = function(Value)
+        highlightEnabled = Value
+        if highlightEnabled then
+            -- Enable highlighting
+            for i, plr in next, Players:GetPlayers() do
+                Highlight(plr)
+            end
+        else
+            -- Disable highlighting
+            for i, plr in next, Players:GetPlayers() do
+                if Storage[plr.Name] then
+                    Storage[plr.Name]:Destroy()
+                end
+            end
+        end
+        print('[cb] MyToggle changed to:', Value)
+    end
+})
+
+Players.PlayerAdded:Connect(function(plr)
+    if highlightEnabled then
+        Highlight(plr)
+    end
+end)
+
+for i, v in next, Players:GetPlayers() do
+    if highlightEnabled then
+        Highlight(v)
+    end
 end
 
--- Remove highlights when players leave
 Players.PlayerRemoving:Connect(function(plr)
     local plrname = plr.Name
     if Storage[plrname] then
@@ -844,68 +877,26 @@ Players.PlayerRemoving:Connect(function(plr)
     end
 end)
 
--- UI Components for ESP Settings
-local LeftGroupBox = {} -- Assuming you are adding UI components here.
-
--- Toggle for Highlight Visibility
-ESPGroupBox:AddToggle('HighlightToggle', {
-    Text = 'Toggle Player Highlight',
-    Default = false, -- Set to false to start with highlights off
-    Tooltip = 'Toggle the visibility of player highlights.',
-    Callback = function(Value)
-        for _, plr in next, Players:GetPlayers() do
-            local plrname = plr.Name
-            local highlight = Storage:FindFirstChild(plrname)
-            if highlight then
-                highlight.Enabled = Value
-            end
-        end
-    end
-})
-
--- Slider for Highlight Transparency
-ESPGroupBox:AddSlider('HighlightTransparency', {
-    Text = 'Highlight Transparency',
-    Default = 0.5,
-    Min = 0,
-    Max = 1,
-    Rounding = 0.1,
-    Callback = function(Value)
-        FillTransparency = Value
-        for _, plr in next, Players:GetPlayers() do
-            local plrname = plr.Name
-            local highlight = Storage:FindFirstChild(plrname)
-            if highlight then
-                highlight.FillTransparency = Value
-            end
-        end
-    end
-})
-
--- Color Picker for Highlight Color
+-- Color Picker for highlight color
 ESPGroupBox:AddLabel('Color'):AddColorPicker('ColorPicker', {
-    Default = FillColor,
-    Title = 'Highlight Color',
-    Transparency = 0,
+    Default = FillColor,  -- Initial value from the FillColor variable
+    Title = 'Highlight Color', 
+    Transparency = 0,  -- No transparency in the picker
+
     Callback = function(Value)
         FillColor = Value
-        for _, plr in next, Players:GetPlayers() do
-            local plrname = plr.Name
-            local highlight = Storage:FindFirstChild(plrname)
-            if highlight then
-                highlight.FillColor = Value
-            end
-        end
+        print('[cb] Color changed!', Value)
     end
 })
 
--- Optional: Function to update the highlight color if changed
 Options.ColorPicker:OnChanged(function()
-    print('Highlight Color changed!', Options.ColorPicker.Value)
-    print('Transparency changed!', Options.ColorPicker.Transparency)
+    FillColor = Options.ColorPicker.Value
+    print('Color changed!', FillColor)
 end)
 
-Options.ColorPicker:SetValueRGB(Color3.fromRGB(175, 25, 255)) -- Set default color
+-- Set the initial color for the picker
+Options.ColorPicker:SetValueRGB(Color3.fromRGB(175, 25, 255))
+
 
 
 

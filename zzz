@@ -48,7 +48,7 @@ local ESP = {
 -- Create group boxes for each tab separately
 local AutoGroupBox = Main.Main:AddLeftGroupbox('Auto')
 local HBEGroupBox = Aiming.HBE:AddLeftGroupbox('HBE')
-local RAimlockGroupBox = Misc.HBE:AddRightGroupbox('Aimlock');
+local RAimlockGroupBox = Aiming.HBE:AddRightGroupbox('Aimlock');
 local MiscGroupBox = Misc.Misc:AddLeftGroupbox('Misc')
 local RMiscGroupBox = Misc.Misc:AddRightGroupbox('Misc #2');
 local ESPGroupBox = ESP.ESP:AddLeftGroupbox('ESP')

@@ -119,6 +119,79 @@ AutoGroupBox:AddToggle('KillAllToggle', {
 
 
 
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
+
+local DuelPads = {
+    ["Pad1"] = Workspace.Lobby:GetChildren()[2].DuelRing_1v1:GetChildren()[3].Pad,
+    ["Pad2"] = Workspace.Lobby:GetChildren()[2].DuelRing_2v2:GetChildren()[3].Pad,
+    ["Pad3"] = Workspace.Lobby:GetChildren()[2].DuelRing_3v3:GetChildren()[3].Pad,
+    ["Pad4"] = Workspace.Lobby:GetChildren()[2].DuelRing_4v4:GetChildren()[3].Pad
+}
+
+local function TeleportToPad(pad)
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        LocalPlayer.Character.HumanoidRootPart.CFrame = pad.CFrame
+    end
+end
+
+local Toggles = {}
+
+AutoGroupBox:AddToggle('Toggle_Pad1', {
+    Text = 'Teleport to Pad1',
+    Default = true,
+    Tooltip = 'Toggle to teleport to Pad1',
+    Callback = function(Value)
+        print('[cb] Pad1 changed to:', Value)
+        Toggles["Pad1"] = Value
+        if Value then
+            TeleportToPad(DuelPads["Pad1"])
+        end
+    end
+})
+
+AutoGroupBox:AddToggle('Toggle_Pad2', {
+    Text = 'Teleport to Pad2',
+    Default = true,
+    Tooltip = 'Toggle to teleport to Pad2',
+    Callback = function(Value)
+        print('[cb] Pad2 changed to:', Value)
+        Toggles["Pad2"] = Value
+        if Value then
+            TeleportToPad(DuelPads["Pad2"])
+        end
+    end
+})
+
+AutoGroupBox:AddToggle('Toggle_Pad3', {
+    Text = 'Teleport to Pad3',
+    Default = true,
+    Tooltip = 'Toggle to teleport to Pad3',
+    Callback = function(Value)
+        print('[cb] Pad3 changed to:', Value)
+        Toggles["Pad3"] = Value
+        if Value then
+            TeleportToPad(DuelPads["Pad3"])
+        end
+    end
+})
+
+AutoGroupBox:AddToggle('Toggle_Pad4', {
+    Text = 'Teleport to Pad4',
+    Default = true,
+    Tooltip = 'Toggle to teleport to Pad4',
+    Callback = function(Value)
+        print('[cb] Pad4 changed to:', Value)
+        Toggles["Pad4"] = Value
+        if Value then
+            TeleportToPad(DuelPads["Pad4"])
+        end
+    end
+})
+
+
+
 
 
 

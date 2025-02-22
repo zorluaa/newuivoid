@@ -792,15 +792,6 @@ setupESP()
 
 
 
-local Library = {}
-Library.__index = Library
-
-local RS = game:GetService("RunService")
-local Camera = workspace.CurrentCamera
-local To2D = Camera.WorldToViewportPoint
-local LocalPlayer = game.Players.LocalPlayer
-
--- Variables for Highlight settings
 local FillColor = Color3.fromRGB(175, 25, 255)
 local DepthMode = "AlwaysOnTop"
 local FillTransparency = 0.5
@@ -809,7 +800,6 @@ local OutlineTransparency = 0
 
 local CoreGui = game:FindService("CoreGui")
 local Players = game:FindService("Players")
-local lp = Players.LocalPlayer
 local connections = {}
 
 local Storage = Instance.new("Folder")
@@ -854,8 +844,8 @@ Players.PlayerRemoving:Connect(function(plr)
     end
 end)
 
--- UI Elements and Highlight Handling (Additions)
-local ESPGroupBox = {} -- Assuming this is where you're adding UI components.
+-- UI Components for ESP Settings
+local LeftGroupBox = {} -- Assuming you are adding UI components here.
 
 -- Toggle for Highlight Visibility
 ESPGroupBox:AddToggle('HighlightToggle', {
@@ -867,7 +857,7 @@ ESPGroupBox:AddToggle('HighlightToggle', {
             local plrname = plr.Name
             local highlight = Storage:FindFirstChild(plrname)
             if highlight then
-                highlight.Visible = Value
+                highlight.Enabled = Value
             end
         end
     end
@@ -916,5 +906,6 @@ Options.ColorPicker:OnChanged(function()
 end)
 
 Options.ColorPicker:SetValueRGB(Color3.fromRGB(175, 25, 255)) -- Set default color
+
 
 

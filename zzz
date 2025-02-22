@@ -584,10 +584,14 @@ local spinSpeed = 1            -- Default spin speed (1-100)
 -- Spinbot function to make the player spin
 local function Spinbot()
     while spinbotEnabled do
-        -- Spin the HumanoidRootPart continuously by modifying its CFrame
-        local humanoidRootPart = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-        if humanoidRootPart then
-            humanoidRootPart.CFrame = humanoidRootPart.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0)
+        local character = lp.Character
+        if character then
+            -- Apply rotation to the entire character model
+            local rootPart = character:FindFirstChild("HumanoidRootPart")
+            if rootPart then
+                -- Apply the rotation to the root part of the character
+                character:SetPrimaryPartCFrame(rootPart.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0))
+            end
         end
         wait(0.01)  -- Adjust the wait time to control spin speed precision
     end
@@ -595,7 +599,7 @@ end
 
 -- Toggle for enabling/disabling the spinbot
 RMiscGroupBox:AddToggle('SpinbotToggle', {
-    Text = 'Spinbot toggle',
+    Text = 'Enable/Disable Spinbot',
     Default = false,  -- Initially off
     Tooltip = 'Toggle spinbot on/off',
 

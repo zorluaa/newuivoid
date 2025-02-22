@@ -529,13 +529,15 @@ MiscGroupBox:AddSlider('FloatHeightSlider', {
 })
 
 -- Anti-AFK Toggle
+-- Anti-AFK Toggle
 local antiAFKConnection
 RMiscGroupBox:AddToggle('AntiAFK', {
     Text = 'Enable Anti-AFK',
-    Default = false, -- Set default to false so it doesn't toggle on immediately
+    Default = false, -- Default set to false (unchecked)
     Tooltip = 'Keeps you from being marked as AFK',
 
     Callback = function(Value)
+        -- Ensure it only starts when toggled on
         if Value then
             -- Start the Anti-AFK loop
             antiAFKConnection = game:GetService("RunService").Heartbeat:Connect(function()
@@ -552,45 +554,15 @@ RMiscGroupBox:AddToggle('AntiAFK', {
     end
 })
 
--- Remove Head Toggle
-RMiscGroupBox:AddToggle('RemoveHead', {
-    Text = 'Remove My Head',
-    Default = false,
-    Tooltip = 'Hide your head from your own view',
-
-    Callback = function(Value)
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local head = character:FindFirstChild("Head")
-
-        if head then
-            if Value then
-                -- Only remove the head, not the whole player
-                head:Destroy()
-            else
-                -- Restore the head if it's not already there
-                if not character:FindFirstChild("Head") then
-                    local newHead = Instance.new("Part")
-                    newHead.Name = "Head"
-                    newHead.Size = Vector3.new(2, 1, 1)
-                    newHead.Anchored = false
-                    newHead.CanCollide = false
-                    newHead.Parent = character
-                end
-            end
-        end
-    end
-})
-
 -- Advertise Toggle
 RMiscGroupBox:AddToggle('Advertise', {
     Text = 'Advertise Void.lua',
-    Default = false, -- Set to false so it's not triggered immediately
+    Default = false, -- Default set to false (unchecked)
     Tooltip = 'Advertises Void.lua in the chat',
 
     Callback = function(Value)
         if Value then
-            -- Send messages to the chat
+            -- Ensure the message is sent to the chat correctly
             local chatService = game:GetService("ReplicatedStorage"):WaitForChild("DefaultChatSystemChatEvents")
             local sayMessage = chatService:WaitForChild("SayMessageRequest")
 
@@ -603,6 +575,7 @@ RMiscGroupBox:AddToggle('Advertise', {
         end
     end
 })
+
 
 
 

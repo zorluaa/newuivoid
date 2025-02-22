@@ -563,9 +563,13 @@ RMiscGroupBox:AddToggle('Advertise', {
 
     Callback = function(Value)
         if Value then
-            -- Send messages to the chat using the correct path
-            local chatService = game:GetService("ReplicatedStorage"):WaitForChild("DefaultChatSystemChatEvents")
+            -- Ensure we are accessing the correct chat path and it's available
+            local ReplicatedStorage = game:GetService("ReplicatedStorage")
+            local chatService = ReplicatedStorage:WaitForChild("DefaultChatSystemChatEvents")
             local sayMessage = chatService:WaitForChild("SayMessageRequest")
+            
+            -- Debugging to ensure the chat path is correct
+            print("Chat Path Found:", sayMessage)
 
             -- Send messages to the chat with slight delays
             sayMessage:FireServer("Void.lua Is the best Mvsd Script", "All")
@@ -576,6 +580,7 @@ RMiscGroupBox:AddToggle('Advertise', {
         end
     end
 })
+
 
 
 

@@ -149,7 +149,7 @@ end
 AutoGroupBox:AddToggle('Toggle_Pad1', {
     Text = 'Teleport to Pad1',
     Default = false,
-    Tooltip = 'Teleport 1v1 Pad',
+    Tooltip = 'Toggle to teleport to Pad1',
     Callback = function(Value)
         Toggles["Pad1"] = Value
         if Value then
@@ -161,7 +161,7 @@ AutoGroupBox:AddToggle('Toggle_Pad1', {
 AutoGroupBox:AddToggle('Toggle_Pad2', {
     Text = 'Teleport to Pad2',
     Default = false,
-    Tooltip = 'Teleport 2v2 Pad',
+    Tooltip = 'Toggle to teleport to Pad2',
     Callback = function(Value)
         Toggles["Pad2"] = Value
         if Value then
@@ -173,7 +173,7 @@ AutoGroupBox:AddToggle('Toggle_Pad2', {
 AutoGroupBox:AddToggle('Toggle_Pad3', {
     Text = 'Teleport to Pad3',
     Default = false,
-    Tooltip = 'Teleport 3v3 Pad',
+    Tooltip = 'Toggle to teleport to Pad3',
     Callback = function(Value)
         Toggles["Pad3"] = Value
         if Value then
@@ -185,7 +185,7 @@ AutoGroupBox:AddToggle('Toggle_Pad3', {
 AutoGroupBox:AddToggle('Toggle_Pad4', {
     Text = 'Teleport to Pad4',
     Default = false,
-    Tooltip = 'Teleport 4v4 Pad',
+    Tooltip = 'Toggle to teleport to Pad1',
     Callback = function(Value)
         Toggles["Pad4"] = Value
         if Value then

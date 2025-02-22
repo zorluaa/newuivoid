@@ -581,19 +581,17 @@ RMiscGroupBox:AddToggle('AntiAFK', {
 local spinbotEnabled = false   -- Flag to control if spinbot is on or off
 local spinSpeed = 1            -- Default spin speed (1-100)
 
--- Spinbot function to make the player spin
+-- Function to rotate the entire character
 local function Spinbot()
     while spinbotEnabled do
         local character = lp.Character
-        if character then
-            -- Apply rotation to the entire character model
-            local rootPart = character:FindFirstChild("HumanoidRootPart")
-            if rootPart then
-                -- Apply the rotation to the root part of the character
-                character:SetPrimaryPartCFrame(rootPart.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0))
-            end
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            -- Make the character rotate around its center
+            local rootPart = character.HumanoidRootPart
+            -- Apply rotation to the entire character using CFrame
+            rootPart.CFrame = rootPart.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0)
         end
-        wait(0.01)  -- Adjust the wait time to control spin speed precision
+        wait(0.01)  -- Adjust the wait time for smoother rotation
     end
 end
 
@@ -627,6 +625,7 @@ RMiscGroupBox:AddSlider('SpinSpeedSlider', {
         print('[cb] Spin speed changed to:', Value)
     end
 })
+
 
 
 
@@ -950,7 +949,6 @@ end)
 
 -- Set the initial color for the picker
 Options.ColorPicker:SetValueRGB(Color3.fromRGB(175, 25, 255))
-
 
 
 

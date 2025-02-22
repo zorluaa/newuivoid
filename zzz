@@ -534,16 +534,68 @@ RMiscGroupBox:AddToggle('AntiAFK', {
     Tooltip = 'Keeps you from being marked as AFK', -- Tooltip description
 
     Callback = function(Value)
+        -- Define the anti-AFK loop function
+        local antiAFKFunction
         if Value then
             -- Start the Anti-AFK loop
-            game:GetService("RunService").Heartbeat:Connect(function()
-                -- Simulate a small action, like moving
+            antiAFKFunction = game:GetService("RunService").Heartbeat:Connect(function()
                 game.Players.LocalPlayer.Character.Humanoid:Move(Vector3.new(0, 0, 0))
-                wait(5)  -- Adjust this timing as needed
+                wait(5)  -- Adjust the timing as needed
             end)
         else
             -- Stop the Anti-AFK loop
-            game:GetService("RunService").Heartbeat:Disconnect() 
+            if antiAFKFunction then
+                antiAFKFunction:Disconnect()
+                antiAFKFunction = nil
+            end
+        end
+    end
+})
+
+RMiscGroupBox:AddToggle('RemoveHead', {
+    Text = 'Remove My Head',
+    Default = false, -- Default value (true / false)
+    Tooltip = 'Hide your head from your own view', -- Tooltip description
+
+    Callback = function(Value)
+        -- Get the player's character and humanoid
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local head = character:FindFirstChild("Head")
+
+        -- Check if the head exists
+        if head then
+            if Value then
+                -- Remove the head for the local player only (client-side)
+                head:Destroy()
+            else
+                -- Recreate the head when the toggle is turned off
+                if not character:FindFirstChild("Head") then
+                    local newHead = Instance.new("Part")
+                    newHead.Name = "Head"
+                    newHead.Size = Vector3.new(2, 1, 1)
+                    newHead.Anchored = false
+                    newHead.CanCollide = false
+                    newHead.Parent = character
+                end
+            end
+        end
+    end
+})
+
+RMiscGroupBox:AddToggle('Advertise', {
+    Text = 'Advertise Void.lua',
+    Default = false, -- Default value (true / false)
+    Tooltip = 'Advertises Void.lua in the chat', -- Tooltip description
+
+    Callback = function(Value)
+        if Value then
+            -- Send messages to the Roblox chat
+            game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Void.lua Is the best Mvsd Script", "All")
+            wait(1)  -- Short wait before the next message
+            game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Void On Top", "All")
+            wait(1)
+            game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Zor <3", "All")
         end
     end
 })

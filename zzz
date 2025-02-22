@@ -49,6 +49,7 @@ local ESP = {
 local AutoGroupBox = Main.Main:AddLeftGroupbox('Auto')
 local HBEGroupBox = Aiming.HBE:AddLeftGroupbox('HBE')
 local MiscGroupBox = Misc.Misc:AddLeftGroupbox('Misc')
+local RMiscGroupBox = Misc.Misc:AddRightGroupbox('Misc #2');
 local ESPGroupBox = ESP.ESP:AddLeftGroupbox('ESP')
 
 
@@ -527,6 +528,25 @@ MiscGroupBox:AddSlider('FloatHeightSlider', {
     end
 })
 
+RMiscGroupBox:AddToggle('AntiAFK', {
+    Text = 'Enable Anti-AFK',
+    Default = true, -- Default value (true / false)
+    Tooltip = 'Keeps you from being marked as AFK', -- Tooltip description
+
+    Callback = function(Value)
+        if Value then
+            -- Start the Anti-AFK loop
+            game:GetService("RunService").Heartbeat:Connect(function()
+                -- Simulate a small action, like moving
+                game.Players.LocalPlayer.Character.Humanoid:Move(Vector3.new(0, 0, 0))
+                wait(5)  -- Adjust this timing as needed
+            end)
+        else
+            -- Stop the Anti-AFK loop
+            game:GetService("RunService").Heartbeat:Disconnect() 
+        end
+    end
+})
 
 
 
